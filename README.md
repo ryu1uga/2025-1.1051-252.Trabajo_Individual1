@@ -72,10 +72,26 @@ api-security-demo/
 ## 3. Diagrama de Contenedores
 
 ```mermaid
-graph TD
-    A[Cliente <br> (Browser / App)] -->|HTTPS / Bearer Token| B[API Gateway <br> (Opcional) <br> - Rate Limiting <br> - Logging <br> - Auth Middleware]
-    B -->| | C[FastAPI Service <br> - /login <br> - /tasks <br> - JWT Validation]
-    B -->|Rate Limiting <br> Users / Tasks| D[Redis / DB]
+flowchart TB
+    subgraph Cliente
+        A[Usuario / App / Browser]
+    end
+
+    subgraph API [FastAPI Service]
+        B[/token - Login/Generar JWT/]
+        C[/tasks - Endpoint Protegido/]
+        D[Validación JWT]
+    end
+
+    subgraph RedisService [Redis]
+        E[Rate Limiter / Contador de Requests]
+    end
+
+    A --> B
+    B --> D
+    A --> C
+    C --> D
+    D --> E
 ```
 
 **Descripción del flujo:**  
