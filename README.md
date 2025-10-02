@@ -73,8 +73,8 @@ api-security-demo/
 
 ```mermaid
 graph TD
-    A[Cliente <br> (Browser / App)] -->|HTTPS / Bearer Token| B[API Gateway <br> (Opcional) <br> - Rate Limiting <br> - Logging <br> - Auth Middleware]
-    B -->| | C[FastAPI Service <br> - /login <br> - /tasks <br> - JWT Validation]
+    A[Cliente <br> Browser / App] -->|HTTPS / Bearer Token| B[API Gateway <br> Opcional <br> - Rate Limiting <br> - Logging <br> - Auth Middleware]
+    B -->|Validación / Comunicación| C[FastAPI Service <br> - /login <br> - /tasks <br> - JWT Validation]
     B -->|Rate Limiting <br> Users / Tasks| D[Redis / DB]
 ```
 
