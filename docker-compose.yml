@@ -1,0 +1,35 @@
+version: '3.8'
+services:
+  redis:
+    image: redis:7-alpine
+    ports: ["6379:6379"]
+
+  postgres:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_PASSWORD: example
+    ports: ["5432:5432"]
+
+  api:
+    build: ./api
+    depends_on: ["redis","postgres"]
+    environment:
+      - REDIS_URL=redis://redis:6379
+    networks: ["appnet"]
+
+  ids:
+    build: ./ids
+    depends_on: ["redis"]
+    environment:
+      - REDIS_URL=redis://redis:6379
+    networks: ["appnet"]
+
+  nginx:
+    build: ./nginx
+    ports: ["8080:80"]
+    depends_on: ["api"]
+    networks: ["appnet"]
+
+networks:
+  appnet:
+    driver: bridge
