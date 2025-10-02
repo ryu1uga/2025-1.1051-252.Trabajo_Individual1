@@ -25,7 +25,7 @@ async def startup():
     redis_client = redis.from_url("redis://redis:6379", encoding="utf-8", decode_responses=True)
     await FastAPILimiter.init(redis_client)
 
-# Login endpoint (JSON)
+# Token endpoint (JSON)
 @app.post("/token")
 def login(request: LoginRequest):
     username = request.username
