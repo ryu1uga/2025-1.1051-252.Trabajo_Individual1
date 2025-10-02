@@ -2,8 +2,9 @@ from fastapi import FastAPI, Depends, HTTPException
 from fastapi.security import OAuth2PasswordBearer
 from fastapi_limiter import FastAPILimiter
 from fastapi_limiter.depends import RateLimiter
+from pydantic import BaseModel
 import jwt
-import aioredis
+import redis.asyncio as redis
 from datetime import datetime, timedelta
 
 app = FastAPI()
@@ -12,16 +13,23 @@ SECRET_KEY = "mi_clave_secreta"
 ALGORITHM = "HS256"
 
 # Fake DB
-users_db = {"alice": "password123"}
+users_db = {"ryuichi": "password123"}
+
+# Modelo para login con JSON
+class LoginRequest(BaseModel):
+    username: str
+    password: str
 
 @app.on_event("startup")
 async def startup():
-    redis = await aioredis.from_url("redis://redis:6379", encoding="utf-8", decode_responses=True)
-    await FastAPILimiter.init(redis)
+    redis_client = redis.from_url("redis://redis:6379", encoding="utf-8", decode_responses=True)
+    await FastAPILimiter.init(redis_client)
 
-# Login endpoint
+# Login endpoint (JSON)
 @app.post("/token")
-def login(username: str, password: str):
+def login(request: LoginRequest):
+    username = request.username
+    password = request.password
     if username in users_db and users_db[username] == password:
         exp = datetime.utcnow() + timedelta(minutes=30)
         token = jwt.encode({"sub": username, "exp": exp}, SECRET_KEY, algorithm=ALGORITHM)
